@@ -35,6 +35,18 @@ def get_available_letters(letters_guessed):
         if l not in letters_guessed:
             available_letters += l
     return available_letters
+def show_image(remaining_lives):
+    print(IMAGES[8-remaining_lives])
+    show_remaining_lives(remaining_lives -1 )
+
+def show_remaining_lives(remaining_lives):
+    print("")
+    print("Remaining Lives:",remaining_lives)
+    
+def show_hint(letters_guessed,secret_word):
+    for letter in secret_word:
+        if letter not in letters_guessed:
+            return letter
 
 def is_Valid_input(input_character, letters_guessed):
     if len(input_character) == 1 and ord('a') <= ord(input_character) <= ord('z') and (input_character not in letters_guessed): 
@@ -43,7 +55,7 @@ def is_Valid_input(input_character, letters_guessed):
         return False
 
 # print(get_available_letters(['c','h','w','z']))
-def hangman(secret_word,remaining_lives,letters_guessed,start):
+def hangman(secret_word,remaining_lives,letters_guessed,start,hint_used):
 
     if start:
         print("Welcome to the game, Hangman!")
@@ -57,6 +69,15 @@ def hangman(secret_word,remaining_lives,letters_guessed,start):
 
     guess = input("Please guess a letter: ")
     letter = guess.lower()
+    if letter == 'hint' and not hint_used:
+        # hint_used = True
+        hint_letter = show_hint(letters_guessed,secret_word)
+        letters_guessed.append(hint_letter)
+        print("Hint used: {}".format(get_guessed_word(secret_word, letters_guessed)))
+        if is_word_guessed(secret_word, letters_guessed) == True:
+                print(" * * Congratulations, you won! * * ", end='\n\n')
+                return
+
     if is_Valid_input(letter, letters_guessed):
         if letter in secret_word:
             letters_guessed.append(letter)
@@ -64,20 +85,25 @@ def hangman(secret_word,remaining_lives,letters_guessed,start):
             if is_word_guessed(secret_word, letters_guessed) == True:
                 print(" * * Congratulations, you won! * * ", end='\n\n')
                 return
-            print("Remaining Lives:",remaining_lives)
+            show_remaining_lives(remaining_lives)
         else:
             print("Oops! That letter is not in my word: {} ".format(get_guessed_word(secret_word, letters_guessed)))
             letters_guessed.append(letter)
             print("")
-            print(IMAGES[8 - remaining_lives])
+            show_image(remaining_lives)
             remaining_lives -= 1
-            print("Remaining Lives:",remaining_lives)
+            if remaining_lives == 0:
+                print("\n *--GAME OVER--*")
 
         if remaining_lives:
-            hangman(secret_word,remaining_lives,letters_guessed,False)
+            hangman(secret_word,remaining_lives,letters_guessed,False,hint_used)
     else:
-        print("Invalid input",letter)
-        hangman(secret_word,remaining_lives,letters_guessed,False)
+        if letter == 'hint' and not hint_used:
+            hint_used = True
+            hangman(secret_word,remaining_lives,letters_guessed,False, hint_used)
+        else:
+            print("Invalid input",letter)
+            hangman(secret_word,remaining_lives,letters_guessed,False, hint_used)
 
 secret_word = choose_word()
-hangman(secret_word,8,[],True)
+hangman(secret_word,8,[],True, False)
