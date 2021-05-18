@@ -43,9 +43,9 @@ def is_Valid_input(input_character, letters_guessed):
         return False
 
 # print(get_available_letters(['c','h','w','z']))
-def hangman(secret_word,remaining_lives,letters_guessed):
+def hangman(secret_word,remaining_lives,letters_guessed,start):
 
-    if remaining_lives == 0:
+    if start:
         print("Welcome to the game, Hangman!")
         print("I am thinking of a word that is {} letters long.".format(
         str(len(secret_word))), end='\n\n')
@@ -74,11 +74,10 @@ def hangman(secret_word,remaining_lives,letters_guessed):
             print("Remaining Lives:",remaining_lives)
 
         if remaining_lives:
-            hangman(secret_word,remaining_lives,letters_guessed)
+            hangman(secret_word,remaining_lives,letters_guessed,False)
     else:
         print("Invalid input",letter)
-        hangman(secret_word,remaining_lives,letters_guessed)
+        hangman(secret_word,remaining_lives,letters_guessed,False)
 
 secret_word = choose_word()
-print(secret_word)
-hangman(secret_word,8,[])
+hangman(secret_word,8,[],True)
